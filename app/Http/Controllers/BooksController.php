@@ -35,18 +35,16 @@ class BooksController extends Controller
      */
     public function formatData($data = [])
     {
+        if (count($data) == 0) {
+            $data = '';
+        }
 
         $hashed = $this->hash($data);
 
-        if (count($data) == 0) {
-            $data = '';
-        } else {
-            $data = json_encode($data);
-        }
 
         return [
             'api_key' => self::API_KEY,
-            'data' => $data,
+            'data' => json_encode($data, true),
             'hashed' => $hashed
 
         ];
@@ -60,7 +58,7 @@ class BooksController extends Controller
      */
     public function index()
     {
-        $formatted= $this->formatData([]);
+        $formatted= $this->formatData(['api_key' => self::API_KEY]);
 
         extract($formatted);
 
@@ -70,7 +68,9 @@ class BooksController extends Controller
             'query' => ['api_key' => $api_key, 'data' => $data, 'hashed' => $hashed]
         ]);
 
-        dd($result);
+        $contents = $result->getBody()->getContents();
+
+        dd($contents);
     }
 
     /**
@@ -93,7 +93,9 @@ class BooksController extends Controller
             ['api_key' => $api_key, 'data' => $data, 'hashed' => $hashed]
         ]);
 
-        dd($result);
+        $contents = $result->getBody()->getContents();
+
+        dd($contents);
 
     }
 
@@ -105,17 +107,19 @@ class BooksController extends Controller
      */
     public function show($id)
     {
-        $formatted= $this->formatData([]);
+        $formatted= $this->formatData(['id' => $id]);
 
         extract($formatted);
 
         $client = new Client();
 
-        $result = $client->get('http://mybrary.local/api/books/{$id}', [
+        $result = $client->get('http://mybrary.local/api/books/'.$id, [
             'query' => ['api_key' => $api_key, 'data' => $data, 'hashed' => $hashed]
         ]);
 
-        dd($result);
+        $contents = $result->getBody()->getContents();
+
+        dd($contents);
     }
 
     /**
@@ -139,7 +143,9 @@ class BooksController extends Controller
             ['api_key' => $api_key, 'data' => $data, 'hashed' => $hashed]
         ]);
 
-        dd($result);
+        $contents = $result->getBody()->getContents();
+
+        dd($contents);
 
     }
 
